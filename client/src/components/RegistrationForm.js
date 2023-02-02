@@ -8,7 +8,7 @@ const RegistrationForm = (props) => {
     return (
         <div className='container mt-5'>
             <h1>Register</h1>
-            <form onSubmit={handleSubmit} className="form-control">
+            <form onSubmit={handleSubmit} >
 
             {errors.length > 0 ? errors.map((err, index) => <p key={index} className="text-danger">{err}</p>) : ""}
 
@@ -35,7 +35,7 @@ const RegistrationForm = (props) => {
                     <label>Confirm Password: </label><br/>
                     <input type="password" onChange={handleInput} name ="confirmPassword" />
                 </p>
-                <input type="submit" value={submitValue} className="btn btn-dark"/>
+                <input type="submit" value={submitValue} className="btn" style={{backgroundColor:"#F1ADA7", fontWeight:"bolder", color:"white"}}/>
             </form>
             <Link to="/login">Already have an account?</Link>
 

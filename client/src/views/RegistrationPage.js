@@ -37,10 +37,10 @@ const RegistrationPage = props => {
         axios.post("http://localhost:8000/api/register", user, { withCredentials: true })
             .then(res => {
 
-                    setLogged(user);
-                    setUser(user);
-                    navigate(`/dashboard/${user._id}`)
-                    console.log("from registration: ", user);
+                    setLogged(res.data.user);
+                    setUser(res.data.user);
+                    navigate(`/dashboard/${res.data.user._id}`)
+                    console.log("from registration: ", res.data.user);
 
                     // else {
                 //     console.log(res.data)

@@ -25,6 +25,10 @@ const UserSchema = new mongoose.Schema({
         required: [true, "Password is required"],
         minlength: [8, "Password must be 8 characters or longer"]
     },
+    allImages: {
+        type: [],
+        default: []
+    }
 }, {timestamps: true});
 
   // add this after UserSchema is defined
@@ -48,7 +52,7 @@ UserSchema.pre('save', function(next) {
 });
 
 
-module.exports.User = mongoose.model('User', UserSchema)
+module.exports.User = mongoose.model('User', UserSchema);
 
 
 

@@ -25,8 +25,9 @@ const Login = props => {
         axios.post("http://localhost:8000/api/login", log, { withCredentials: true })
             .then(res => {
                 setLogged(res.data.user);
-                // console.log(res.data.user._id);
+                console.log(res.data.user._id);
                 // console.log("we're logged in");
+                // navigate(`/dashboard/${res.data.user._id}`);
                 navigate(`/dashboard/${res.data.user._id}`);
             })
             .catch(err => {
@@ -59,7 +60,7 @@ const Login = props => {
                     <label>Password: </label><br/>
                     <input type="password" onChange={handleInputChange} name ="password"/>
                 </p>
-                <button type="submit" className="btn btn-dark">Submit</button>
+                <button type="submit" className="btn" style={{backgroundColor:"#F1ADA7", fontWeight:"bolder", color:"white"}}>Submit</button>
 
 
 
