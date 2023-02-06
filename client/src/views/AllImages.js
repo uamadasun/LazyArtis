@@ -51,15 +51,15 @@ const AllImages = (props) => {
 
     return(
         <div className='container mt-5 d-flex flex-wrap'>
-            {images.map( (image, i) => 
+            {user.allImages.map( (url, i) => 
             <div key = {i} className='m-5 align-content-start '> 
                 <div className='d-flex'>
-                    <img style={{border:"15px solid black", width:"300px", height: "auto", background:"white", margin:"auto", padding:"15px 15px"}}src={image.url} alt=""/>
+                    <img style={{border:"15px solid black", width:"300px", height: "auto", background:"white", margin:"auto", padding:"15px 15px"}}src={url} alt=""/>
                 </div>
                 
                 <div>
                     <button className='btn btn-outline-light m-2 btn-sm'><img src={cart_btn} alt="" height={"30px"}/></button>
-                    <button className='btn btn-outline-light m-2 btn-sm' onClick={(e) => {deleteImage(image.url)}}><img src={delete_btn} alt="" height={"30px"}/></button>   
+                    <button className='btn btn-outline-light m-2 btn-sm' onClick={(e) => {deleteImage(url)}}><img src={delete_btn} alt="" height={"30px"}/></button>   
                      
                 </div>
                 

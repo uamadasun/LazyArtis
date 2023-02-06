@@ -11,6 +11,8 @@ import { Configuration, OpenAIApi } from "openai";
 // import crypto from 'crypto' ;
 // const {promisify}= require("util")  ;
 // const randomBytes = promisify(crypto.randomBytes)
+// import * as dotenv from 'dotenv';
+// dotenv.config()
 
 
 
@@ -22,16 +24,11 @@ const Dashboard = (props) => {
     const [newPrompt, setNewPrompt] = useState("");
     const [generatedImg, setGeneratedImage] = useState(null)
     const [loading, setLoading] = useState(false)
+    // const dotenv = require('dotenv')
     // const [images, setPossibleURL] = useState("");
     // const fs = require('fs');
     // const http = require('https');
     // console.log("random prompts", randomPrompts)
-
-    
-
-
-
-
     const { Configuration, OpenAIApi } = require("openai");
     const configuration = new Configuration({
         organization: 'org-Hk6UimJXisVmOz2oLXOLZON2',
@@ -41,12 +38,31 @@ const Dashboard = (props) => {
     
     const AWS = require('aws-sdk');    
     // Configure the AWS SDK with your AWS access key and secret access key
+    // AWS.config.update({
+    //     maxRetries: 3,
+    //     httpOptions: {timeout: 30000, connectTimeout: 5000},
+    //     region: "us-west-2",
+    //     signatureVersion: 'v4',
+    //     accessKeyId: process.env.AWS_ACCESS_KEY ,
+    //     secretAccessKey: process.env.AWS_SECURE_ACCESS_KEY
+    // });
+
     AWS.config.update({
-        accessKeyId: process.env.AWS_ACCESS_KEY ,
-        secretAccessKey: process.env.AWS_SECURE_ACCESS_KEY
+        maxRetries: 3,
+        httpOptions: {timeout: 30000, connectTimeout: 5000},
+        region: "us-west-2",
+        signatureVersion: 'v4',
+        accessKeyId: AWS_ACCESS_KEY ,
+        secretAccessKey: AWS_SECURE_ACCESS_KEY
     });
 
     // Create an S3 client
+    // const s3 = new aws.S3({
+//     region, 
+//     accessKeyId,
+//     secretAccessKey,
+//     signatureVersion: 'v4'
+// })
     const s3 = new AWS.S3();
 
 
@@ -77,14 +93,14 @@ const Dashboard = (props) => {
             method: 'POST',
             headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer'
+            'Authorization': 'Bearer ' + OPEN_AI_KEY
             },
             body: JSON.stringify({
             prompt: newPrompt,
             n: 1,
             size: "256x256",
             }),
-            // "Access-Control-Allow-Origin": "*"
+            "Access-Control-Allow-Origin": "*"
             
         };
         fetch('https://api.openai.com/v1/images/generations', requestOptions)
@@ -93,7 +109,7 @@ const Dashboard = (props) => {
                 setLoading(false);
 
                 setGeneratedImage(data.data[0].url);
-                setImages([...images, data.data[0]]);
+                // setImages([...images, data.data[0]]);
                 console.log(data.data[0]);
 
 
@@ -114,50 +130,53 @@ const Dashboard = (props) => {
 
 
                 // AWS CODE STARTS HERE
-                // const imageName = data.data[0].url;
-                // const imageUrl = `${data.data[0].url}`;
+                const imageName = data.data[0].url;
+                const imageUrl = `${data.data[0].url}`;
+                const bucketName = 'lazyartis';
+                const key = `images/${logged._id}/${imageName}`;
+                // HttpContext.Response.Headers.Add("Access-Control-Allow-Origin", "*")
+
+                // const imageName = "flamingo";
+                // const imageUrl = `https://static.nationalgeographic.co.uk/files/styles/image_3200/public/01-flamingo-friendships-nationalgeographic_1477297.webp?w=1600&h=900`;
                 // const bucketName = 'lazyartis';
                 // const key = `images/${logged._id}/${imageName}`;
 
 
-                // axios.get(imageUrl, {responseType: 'blob'})
-                // .then(function(response) {
+                await axios.get(imageUrl, {responseType: 'blob'} )
+                .then(async (response) => {
+
+                    const params = {Bucket: bucketName, Key: key, Body: response.data};
                     
-                    
+                    s3.upload(params, function(err, data) {
+                    if (err) {
+                        console.error('Error uploading image to S3: ', err);
+                    } else {
+                        console.log('Image successfully uploaded to S3: ', data);
+                        const url = s3.getSignedUrl('getObject', {
+                            Bucket: bucketName,
+                            Key: key,
+                            Expires: 60 // The URL will be valid for 60 seconds
+                        });
+                        console.log("URL:", url)
 
-
-
-                //     const params = {Bucket: bucketName, Key: key, Body: response.data};
-                    
-                //     s3.upload(params, function(err, data) {
-                //     if (err) {
-                //         console.error('Error uploading image to S3: ', err);
-                //     } else {
-                //         console.log('Image successfully uploaded to S3: ', data);
-                //         const url = s3.getSignedUrl('getObject', {
-                //             Bucket: bucketName,
-                //             Key: key,
-                //             Expires: 60 // The URL will be valid for 60 seconds
-                //         });
-
-                //         axios.put('http://localhost:8000/api/image/' + _id, 
-                //             url
-                //         )
-                //         .then(res => console.log(url))
-                //         .catch(err => console.error(err))
-                //     }
-                //     });
-                // })
-                // .catch(function(error) {
-                //     console.error('Error fetching image: ', error);
-                // });
+                        axios.put('http://localhost:8000/api/image/' + _id, 
+                            url
+                        )
+                        .then(res => console.log(url))
+                        .catch(err => console.error(err))
+                    }
+                    });
+                })
+            .catch(function(error) {
+                console.error('Error fetching image this image: ', error);
+            });
                 
-                axios.put('http://localhost:8000/api/image/' + _id, 
-                    // data.data[0].url
-                    data.data[0]
-                )
-                .then(res => console.log(data.data[0]))
-                .catch(err => console.error(err))
+                // axios.put('http://localhost:8000/api/image/' + _id, 
+                //     // data.data[0].url
+                //     data.data[0]
+                // )
+                // .then(res => console.log(data.data[0]))
+                // .catch(err => console.error(err))
 
 
 
@@ -172,17 +191,19 @@ const Dashboard = (props) => {
             });
     }
 
-    // const handleSubmit = async(e) => {
-    //     e.preventDefault();
-    //     setLoading(true)
-    //     const response = await openai.createImage({
-    //         prompt: newPrompt,
-    //         n: 1,
-    //         size: "256x256",
-    //     });
-    //     setLoading(false)
-    //     setGeneratedImage(response.data.data[0].url)
-    // }
+    const handleNewSubmit = async(e) => {
+        e.preventDefault();
+        setLoading(true)
+        const response = await openai.createImage({
+            prompt: newPrompt,
+            n: 1,
+            size: "256x256",
+        });
+        console.log("response: ", response);
+        setLoading(false)
+        setGeneratedImage(response.data.data[0].url)
+        
+    }
 
     // const saveImageHandler= (url) => {
     //     // const imageUrl = "https://.../image.jpg";
@@ -236,8 +257,8 @@ const Dashboard = (props) => {
                     {/* <label className='mb-2 mt-5'> Write a prompt to create your image: </label> */}
                     <textarea type="text" value={newPrompt} name="prompt"  className='form-control' rows="4" cols="50" onChange={(e) => setNewPrompt(e.target.value)} />
                 </div>
-                <input type="submit" className='btn btn-dark  m-3'  style={{backgroundColor:"#F1ADA7", fontWeight:"bolder", color:"white"}} value="Submit Prompt"/>
                 <button type="button" className='btn btn-dark m-3' onClick={promptGenerator} style={{backgroundColor:"white", fontWeight:"bolder", color:"#F1ADA7"}}>Generate Random Prompt</button>
+                <input type="submit" className='btn btn-dark  m-3'  style={{backgroundColor:"#F1ADA7", fontWeight:"bolder", color:"white"}} value="Submit Prompt"/>
             </form>
             
             <div>
