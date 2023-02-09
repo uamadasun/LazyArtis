@@ -1,21 +1,9 @@
 import React, { useEffect, useState } from 'react';
-// import { useForm } from 'react-hook-form';
-// import { Link, useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { TextField } from '@material-ui/core';
 import logo from '../assets/logo-white.png';
 import { Configuration, OpenAIApi } from "openai";
-// import {http} from "https"; // or 'https' for https:// URLs
-// import {fs} from "fs";
-// import crypto from 'crypto' ;
-// const {promisify}= require("util")  ;
-// const randomBytes = promisify(crypto.randomBytes)
-// import * as dotenv from 'dotenv';
-// dotenv.config()
-
-
-
 
 const Dashboard = (props) => {
     const {logged, setLogged, handleLogout, images, setImages, randomPrompts} = props;
@@ -24,11 +12,6 @@ const Dashboard = (props) => {
     const [newPrompt, setNewPrompt] = useState("");
     const [generatedImg, setGeneratedImage] = useState(null)
     const [loading, setLoading] = useState(false)
-    // const dotenv = require('dotenv')
-    // const [images, setPossibleURL] = useState("");
-    // const fs = require('fs');
-    // const http = require('https');
-    // console.log("random prompts", randomPrompts)
     const { Configuration, OpenAIApi } = require("openai");
     const configuration = new Configuration({
         organization: 'org-Hk6UimJXisVmOz2oLXOLZON2',
@@ -37,15 +20,6 @@ const Dashboard = (props) => {
     const openai = new OpenAIApi(configuration);
     
     const AWS = require('aws-sdk');    
-    // Configure the AWS SDK with your AWS access key and secret access key
-    // AWS.config.update({
-    //     maxRetries: 3,
-    //     httpOptions: {timeout: 30000, connectTimeout: 5000},
-    //     region: "us-west-2",
-    //     signatureVersion: 'v4',
-    //     accessKeyId: process.env.AWS_ACCESS_KEY ,
-    //     secretAccessKey: process.env.AWS_SECURE_ACCESS_KEY
-    // });
 
     AWS.config.update({
         maxRetries: 3,
@@ -56,32 +30,17 @@ const Dashboard = (props) => {
         secretAccessKey: AWS_SECURE_ACCESS_KEY
     });
 
-    // Create an S3 client
-    // const s3 = new aws.S3({
-//     region, 
-//     accessKeyId,
-//     secretAccessKey,
-//     signatureVersion: 'v4'
-// })
     const s3 = new AWS.S3();
 
 
 
     useEffect(() => {
         console.log(_id)
-        // console.log("logged from dashboard", user)
-        // console.log("user from dashboard", user)
         axios.get("http://localhost:8000/api/user/" + _id, { withCredentials: true })
           .then(res => {
             setUser(res.data)
             setLogged(res.data)
             console.log(images);
-            // console.log("user: ", res.data);
-            // console.log("openai: ", configuration)
-            // console.log("configuration.apiKey: ", configuration.apiKey)
-            // console.log("process.env.OPENAI_KEY:", process.env.OPENAI_KEY)
-            
-            
           })
           .catch(err => console.log(err))
     }, [_id]);
@@ -109,25 +68,7 @@ const Dashboard = (props) => {
                 setLoading(false);
 
                 setGeneratedImage(data.data[0].url);
-                // setImages([...images, data.data[0]]);
                 console.log(data.data[0]);
-
-
-                // const response = await openai.createImage({
-                //     prompt: newPrompt,
-                //     n: 1,
-                //     size: "256x256",
-                //   });
-
-                // const file = fs.createWriteStream(`${data.data[0].url}`);
-                // const request = http.get(response.data.data[0].url, function (response) {
-                // response.pipe(file);
-                // file.on("finish", () => {
-                //     file.close();
-                //     console.log("Download Done!");
-                // });
-                // });
-
 
                 // AWS CODE STARTS HERE
                 const imageName = data.data[0].url;
@@ -157,10 +98,12 @@ const Dashboard = (props) => {
                             Key: key,
                             Expires: 60 // The URL will be valid for 60 seconds
                         });
-                        console.log("URL:", url)
+                        // console.log("This is the data: ", data)
+                        // console.log("URL:", url)
+                        // console.log("data location: ", data.Location)
 
                         axios.put('http://localhost:8000/api/image/' + _id, 
-                            url
+                            {"URL": `${data.Location}`}
                         )
                         .then(res => console.log(url))
                         .catch(err => console.error(err))
@@ -170,21 +113,6 @@ const Dashboard = (props) => {
             .catch(function(error) {
                 console.error('Error fetching image this image: ', error);
             });
-                
-                // axios.put('http://localhost:8000/api/image/' + _id, 
-                //     // data.data[0].url
-                //     data.data[0]
-                // )
-                // .then(res => console.log(data.data[0]))
-                // .catch(err => console.error(err))
-
-
-
-
-
-
-
-
 
             }).catch(err => {
                 console.log(err);
@@ -205,40 +133,14 @@ const Dashboard = (props) => {
         
     }
 
-    // const saveImageHandler= (url) => {
-    //     // const imageUrl = "https://.../image.jpg";
-
-    //     fetch(url)
-    //     //                         vvvv
-    //     .then(response => response.blob())
-    //     .then(imageBlob => {
-    //         // Then create a local URL for that image and print it 
-    //         const imageObjectURL = URL.createObjectURL(imageBlob);
-    //         console.log(imageObjectURL);
-    //     });
-    // }
-
-    // const saveImageHandler= (url) => {
-    //     const file = fs.createWriteStream(`${url}`);
-    //     const request = http.get(response.data.data[0].url, function (response) {
-    //     response.pipe(file);
-    //     file.on("finish", () => {
-    //         file.close();
-    //         console.log("Download Done!");
-    //     });
-    // }
-    // )}    
     const promptGenerator = async() => {
         const promptIndex =  await Math.floor(Math.random() * randomPrompts.length);
         setNewPrompt(randomPrompts[promptIndex])
         // look at https://prompthero.com/api
         // console.log("prompt index", promptIndex)
-       
         return
     }
     
-    console.log(newPrompt)
-
     return (
         <div className='container mt-5'>
             {/* <button id="logout-btn" className='btn btn-outline-dark' onClick={handleLogout}> Logout</button>  */}
