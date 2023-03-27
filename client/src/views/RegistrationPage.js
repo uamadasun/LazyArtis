@@ -42,10 +42,6 @@ const RegistrationPage = props => {
                     navigate(`/dashboard/${res.data.user._id}`)
                     console.log("from registration: ", res.data.user);
 
-                    // else {
-                //     console.log(res.data)
-                //     setErrors(res.data)
-                // }
             })
             .catch(err => {
                 const errorResponse = err.response.data.err.errors; // Get the errors from err.response.data

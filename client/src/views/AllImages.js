@@ -56,17 +56,7 @@ const AllImages = (props) => {
 
         </div>
     )
-
-
     
-
-    
-
-
-
-    
-    
-
 }
 
 export default AllImages;

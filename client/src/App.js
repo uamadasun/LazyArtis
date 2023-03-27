@@ -73,17 +73,10 @@ function App() {
       <Routes>
             <Route element={ <Main logged={logged} images={images} setImages={setImages}/> }  path="/"/>
             <Route element={ <RegistrationPage setLogged={setLogged}/>}  path="/register"/>
-            {/* <Route element={ <Dashboard logged={logged} setLogged={setLogged}/>} handleLogout={handleLogout} path="/dashboard/:_id"/> */}
             <Route element={ <Login setLogged={setLogged}/>}  path="/login/"/>
             
             <Route element={ <Dashboard logged={logged} setLogged={setLogged} randomPrompts={randomPrompts} handleLogout={handleLogout} images = {images} setImages={setImages}/>}  path="/dashboard/:_id"/>
-            {/* <Route element={ <AllImages logged={logged} setLogged={setLogged} handleLogout={handleLogout} removeFromDom={removeFromDom}/>}  path="/images/:_id"/> */}
             <Route element={ <AllImages logged={logged} setLogged={setLogged} handleLogout={handleLogout} images = {images} setImages={setImages}/>}  path="/images/:_id"/>
-
-
-            {/* <RegistrationPage path="/register" setLogged={setLogged} /> 
-            <Dashboard path="/dashboard/:_id" logged={logged}/> */}
-            {/* <Route element={<LoginForm />} path="/login"/> */}
 
         </Routes>  
 

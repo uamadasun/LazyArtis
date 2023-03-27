@@ -1,12 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext, useNavigate } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { TextField } from '@material-ui/core';
 import logo from '../assets/logo-white.png';
 import { Configuration, OpenAIApi } from "openai";
+// import LoggedContext from '../LoggedContext';
+
+
+
 
 const Dashboard = (props) => {
     const {logged, setLogged, handleLogout, images, setImages, randomPrompts} = props;
+    // const {handleLogout, images, setImages, randomPrompts} = props;
+    // const loggedUser = useContext(LoggedContext)
+
     const [user, setUser] = useState({});
     const {_id} = useParams();
     const [newPrompt, setNewPrompt] = useState("");
@@ -26,8 +33,8 @@ const Dashboard = (props) => {
         httpOptions: {timeout: 30000, connectTimeout: 5000},
         region: "us-west-2",
         signatureVersion: 'v4',
-        accessKeyId: AWS_ACCESS_KEY ,
-        secretAccessKey: AWS_SECURE_ACCESS_KEY
+        accessKeyId: "AKIA32VV7N6VYK72Z6EW" ,
+        secretAccessKey: "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"
     });
 
     const s3 = new AWS.S3();
@@ -52,7 +59,7 @@ const Dashboard = (props) => {
             method: 'POST',
             headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + OPEN_AI_KEY
+            'Authorization': 'Bearer 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'
             },
             body: JSON.stringify({
             prompt: newPrompt,
