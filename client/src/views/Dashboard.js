@@ -33,8 +33,8 @@ const Dashboard = (props) => {
         httpOptions: {timeout: 30000, connectTimeout: 5000},
         region: "us-west-2",
         signatureVersion: 'v4',
-        accessKeyId: "AKIA32VV7N6VYK72Z6EW" ,
-        secretAccessKey: "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"
+        accessKeyId: AWS_ACCESS_KEY ,
+        secretAccessKey: AWS_SECURE_ACCESS_KEY
     });
 
     const s3 = new AWS.S3();
@@ -59,7 +59,7 @@ const Dashboard = (props) => {
             method: 'POST',
             headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer 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'
+            'Authorization': 'Bearer ' + OPEN_AI_KEY
             },
             body: JSON.stringify({
             prompt: newPrompt,
